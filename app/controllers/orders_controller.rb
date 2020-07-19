@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class OrdersController < ApplicationController
   before_action :authenticate_user!, only: [:create]
 
@@ -24,6 +26,22 @@ class OrdersController < ApplicationController
     else
       render 'carts/checkout'
     end
+  end
+
+  def pay_with_alipay
+    @order = Order.find_by_token(params[:id])
+    @order.payment_with=('alipay')
+    @order.pay!
+
+    redirect_to order_path(@order.token), notice: '使用支付宝成功完成付款'
+  end
+
+  def pay_with_wechat
+    @order = Order.find_by_token(params[:id])
+    @order.payment_with=('wechat')
+    @order.pay!
+
+    redirect_to order_path(@order.token), notice: '使用微信成功完成付款'
   end
 
   private
